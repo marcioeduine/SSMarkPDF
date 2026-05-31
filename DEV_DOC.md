@@ -123,10 +123,24 @@ Entry point. Responsabilidades:
 
 ## Compilar o binário
 
-O ficheiro `SSMarkPDF.spec` configura o PyInstaller com exclusões seguras para reduzir o tamanho do binário.
+O ficheiro `SSMarkPDF.spec` configura o PyInstaller para gerar o executável.
 
+### Comandos de Compilação
+
+**Via `uv` (Recomendado):**
 ```bash
+uv run --with pyinstaller --with reportlab pyinstaller SSMarkPDF.spec
+```
+
+**Via `pip` tradicional:**
+```bash
+pip install pyinstaller reportlab
 pyinstaller SSMarkPDF.spec
+```
+
+Depois de compilar, o binário estará em `dist/SSMarkPDF`. Podes movê-lo para a raiz do repositório:
+```bash
+mv dist/SSMarkPDF ./SSMarkPDF
 ```
 
 **Nota:** o binário é específico para a arquitectura e versão de GLIBC do sistema onde é compilado. Para distribuição, compilar no sistema alvo.

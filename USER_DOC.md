@@ -20,6 +20,19 @@ chmod +x SSMarkPDF
 pip install reportlab
 ```
 
+### Se quiseres compilar o teu próprio binário
+Se quiseres gerar o teu próprio ficheiro executável `SSMarkPDF` a partir do código fonte:
+```bash
+# Usando uv (Recomendado)
+uv run --with pyinstaller --with reportlab pyinstaller SSMarkPDF.spec
+mv dist/SSMarkPDF ./SSMarkPDF
+
+# Usando pip tradicional
+pip install pyinstaller reportlab
+pyinstaller SSMarkPDF.spec
+mv dist/SSMarkPDF ./SSMarkPDF
+```
+
 ---
 
 ## Uso

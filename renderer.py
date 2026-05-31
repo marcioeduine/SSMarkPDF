@@ -2,10 +2,11 @@
 # renderer.py — Conversão de Markdown para elementos ReportLab.
 
 import re
+import unicodedata
 from reportlab.platypus import Paragraph, HRFlowable
 from config import LINHA, TITULO_SECTIONS, COMPETENCIA_SECTIONS
 from styles import (secao_style, subtitulo_style, item_titulo_style,
-                    corpo_style, bullet_style, bullet_topo_style, competencia_style)
+                    corpo_style, bullet_style, competencia_style)
 
 def md_to_rl(text):
     """
@@ -39,14 +40,25 @@ def build_secao(titulo):
     """Título de secção + linha separadora."""
     return [Paragraph(titulo, secao_style), hr()]
 
+def normalize_section_name(name):
+    """Normaliza um nome de secção para maiúsculas, removendo acentos e espaços extra."""
+    if not name:
+        return ""
+    nfkd_form = unicodedata.normalize('NFKD', name)
+    ascii_name = nfkd_form.encode('ASCII', 'ignore').decode('utf-8')
+    return ascii_name.upper().strip()
+
 def render_section(section_name, lines):
     """
     Converte as linhas de uma secção em elementos ReportLab.
     O estilo aplicado depende do tipo de secção.
     """
     result         = []
-    is_titulo      = section_name in TITULO_SECTIONS
-    is_competencia = section_name in COMPETENCIA_SECTIONS
+    norm_name      = normalize_section_name(section_name)
+    norm_titulos   = {normalize_section_name(s) for s in TITULO_SECTIONS}
+    norm_comps     = {normalize_section_name(s) for s in COMPETENCIA_SECTIONS}
+    is_titulo      = norm_name in norm_titulos
+    is_competencia = norm_name in norm_comps
 
     for line in lines:
         stripped = line.strip()
@@ -64,14 +76,12 @@ def render_section(section_name, lines):
             result.append(Paragraph(f"\u2022 {md_to_rl(text)}", bullet_style))
 
         elif re.match(r'^\*\s+', line):
-            # Bullet de topo
+            # Linha de topo (pai) — nunca tem bullet •
             text = re.sub(r'^\*\s+', '', line)
-            if is_titulo:
-                result.append(Paragraph(md_to_rl(text), item_titulo_style))
-            elif is_competencia:
-                result.append(Paragraph(f"\u2022 {md_to_rl(text)}", competencia_style))
+            if is_competencia:
+                result.append(Paragraph(md_to_rl(text), competencia_style))
             else:
-                result.append(Paragraph(f"\u2022 {md_to_rl(text)}", bullet_topo_style))
+                result.append(Paragraph(md_to_rl(text), item_titulo_style))
 
         else:
             # Parágrafo de corpo

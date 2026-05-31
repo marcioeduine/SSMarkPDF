@@ -28,10 +28,24 @@ python3 ss_markpdf.py resume.md ser_superior
 
 ## Compilar como binário
 
+Para gerar o binário auto-executável (`SSMarkPDF`), podes usar uma das seguintes opções:
+
+### Opção 1: Usando `uv` (Recomendado - não requer instalação global)
+Se tiveres o `uv` instalado, podes compilar com um único comando sem instalar dependências globais no teu sistema:
 ```bash
-pip install pyinstaller
+uv run --with pyinstaller --with reportlab pyinstaller SSMarkPDF.spec
+```
+
+### Opção 2: Usando `pip` (Instalação padrão)
+Instala o `pyinstaller` e o `reportlab` no teu ambiente Python e corre o compilador:
+```bash
+pip install pyinstaller reportlab
 pyinstaller SSMarkPDF.spec
-# binário gerado em dist/SSMarkPDF
+```
+
+Após a compilação, o binário será gerado na pasta `dist/SSMarkPDF`. Para substituir o binário na raiz do projeto, move-o para lá:
+```bash
+mv dist/SSMarkPDF ./SSMarkPDF
 ```
 
 ## Estrutura do projecto
